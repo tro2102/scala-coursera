@@ -164,8 +164,8 @@ class FunSetSuite extends FunSuite {
     new TestSets {
       val evens = filter(firstTen, evenFun)
 
-      assert(forall(evens, evenFun), "Even set 1")
-      assert(!forall(firstTen, evenFun), "Even set 2")
+      assert(forall(evens, evenFun), "Forach Even set 1")
+      assert(!forall(firstTen, evenFun), "Forach  Even set 2")
     }
   }
 
@@ -174,10 +174,23 @@ class FunSetSuite extends FunSuite {
       val evens = filter(firstTen, evenFun)
       val odds = filter(firstTen, oddFun)
 
-      assert(exists(evens, evenFun), "Even set 1")
-      assert(!exists(odds, evens), "Even set 2")
-      assert(exists(firstTen, i => i == 7), "Even set 3")
-      assert(!exists(firstTen, i => i == 11), "Even set 4")
+      assert(exists(evens, evenFun), "Exists Even set 1")
+      assert(!exists(odds, evens), "Exists Even set 2")
+      assert(exists(firstTen, i => i == 7), "Exists Even set 3")
+      assert(!exists(firstTen, i => i == 11), "Exists Even set 4")
+    }
+  }
+
+  test("map returns a new set with predicate applied") {
+    new TestSets {
+      val evens = filter(firstTen, evenFun)
+      val odds = filter(firstTen, oddFun)
+
+      val mappedEvens = map(evens, i => i * 2)
+      assert(contains(mappedEvens, 4), "Mapped set 1")
+      assert(!contains(mappedEvens, 3), "Mapped set 2")
+      assert(contains(mappedEvens, 8), "Mapped set 3")
+      assert(!contains(mappedEvens, 6), "Mapped set 6")
     }
   }
 }
