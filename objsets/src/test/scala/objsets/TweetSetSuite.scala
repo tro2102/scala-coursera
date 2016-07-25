@@ -8,6 +8,7 @@ import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class TweetSetSuite extends FunSuite {
+
   trait TestSets {
     val set1 = new Empty
     val set2 = set1.incl(new Tweet("a", "a body", 20))
@@ -17,6 +18,7 @@ class TweetSetSuite extends FunSuite {
     val set4c = set3.incl(c)
     val set4d = set3.incl(d)
     val set5 = set4c.incl(d)
+    val set6 = set1.incl(c).incl(d)
   }
 
   def asSet(tweets: TweetSet): Set[Tweet] = {
@@ -63,6 +65,18 @@ class TweetSetSuite extends FunSuite {
     }
   }
 
+  test("most retweeted set5") {
+    new TestSets {
+      assert(set5.mostRetweeted.retweets === 20)
+    }
+  }
+
+  test("most retweeted set6") {
+    new TestSets {
+      assert(set6.mostRetweeted.retweets === 9)
+    }
+  }
+
   test("descending: set5") {
     new TestSets {
       val trends = set5.descendingByRetweet
@@ -71,4 +85,4 @@ class TweetSetSuite extends FunSuite {
     }
   }
 
-  }
+}
