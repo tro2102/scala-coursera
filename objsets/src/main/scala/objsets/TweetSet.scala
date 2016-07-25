@@ -77,6 +77,8 @@ abstract class TweetSet {
     */
   def descendingByRetweet: TweetList
 
+  def prettyPrint: String
+
   /**
     * The following methods are already implemented
     */
@@ -114,7 +116,8 @@ class Empty extends TweetSet {
 
   val isEmpty = true
 
-  override def descendingByRetweet: TweetList = Nil
+  def prettyPrint: String = "{-}"
+  def descendingByRetweet: TweetList = Nil
 
   /**
     * The following methods are already implemented
@@ -133,7 +136,7 @@ class NonEmpty(elem: Tweet, left: TweetSet = new Empty, right: TweetSet = new Em
 
   def filterAcc(p: Tweet => Boolean, acc: TweetSet): TweetSet = left.filter(p).union(right.filter(p)).union( if(p(elem)) new NonEmpty(elem) else new Empty)
 
-  def union(other: TweetSet): TweetSet = left.union(right).union(other).incl(elem)
+  def union(other: TweetSet): TweetSet = right.union(left.union(other.incl(elem)))
 
   def mostRetweeted: Tweet = {
     val leftMostRetweeted = if(!left.isEmpty) Some(left.mostRetweeted) else None
@@ -144,7 +147,12 @@ class NonEmpty(elem: Tweet, left: TweetSet = new Empty, right: TweetSet = new Em
 
   val isEmpty = false
 
-  override def descendingByRetweet: TweetList = new Cons(mostRetweeted, remove(mostRetweeted).descendingByRetweet)
+  def prettyPrint: String = s"{${left.prettyPrint}|${elem.text}|${right.prettyPrint}}"
+
+  def descendingByRetweet: TweetList = {
+    val mostRetweetedResult = mostRetweeted
+    new Cons(mostRetweetedResult, remove(mostRetweetedResult).descendingByRetweet)
+  }
 
   /**
     * The following methods are already implemented
@@ -203,14 +211,14 @@ object GoogleVsApple {
   val google = List("android", "Android", "galaxy", "Galaxy", "nexus", "Nexus")
   val apple = List("ios", "iOS", "iphone", "iPhone", "ipad", "iPad")
 
-  lazy val googleTweets: TweetSet = ???
-  lazy val appleTweets: TweetSet = ???
+  lazy val googleTweets: TweetSet = TweetReader.allTweets.filter(t => google.exists( word => t.text.contains(word)))
+  lazy val appleTweets: TweetSet = TweetReader.allTweets.filter(t => apple.exists( word => t.text.contains(word)))
 
   /**
     * A list of all tweets mentioning a keyword from either apple or google,
     * sorted by the number of retweets.
     */
-  lazy val trending: TweetList = ???
+  lazy val trending: TweetList = googleTweets.union(appleTweets).descendingByRetweet
 }
 
 object Tweets {
