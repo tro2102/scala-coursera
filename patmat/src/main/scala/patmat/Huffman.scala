@@ -80,11 +80,7 @@ object Huffman {
     * }
     */
   def times(chars: List[Char]): List[(Char, Int)] = {
-    val charMap: Map[Char, Int] = new HashMap
-    for (a <- chars) {
-      charMap.+(a -> charMap.getOrElse(a, 1))
-    }
-    charMap.toList
+    chars.foldLeft(HashMap[Char, Int]())( (list, char) => list.+((char, list.getOrElse(char, 0) + 1 ))).toList
   }
 
   /**
@@ -122,7 +118,7 @@ object Huffman {
 
       val remaining = trees.tail.tail
 
-      remaining.+:(combined).sortBy(_.weight)
+      remaining.:+(combined).sortBy(_.weight)
     }
   }
 
@@ -185,7 +181,7 @@ object Huffman {
       if (bits.isEmpty) existingChars
       else {
         val nextResults = decodeNext(tree, bits)
-        decodeRemaining(tree, nextResults._2, existingChars.+:(nextResults._1))
+        decodeRemaining(tree, nextResults._2, existingChars.:+(nextResults._1))
       }
     }
     decodeRemaining(tree, bits, List[Char]())
@@ -200,7 +196,7 @@ object Huffman {
 
   /**
     * What does the secret message say? Can you decode it?
-    * For the decoding use the `frenchCode' Huffman tree defined above.
+    * For the decoding use the frenchCode Huffman tree defined above.
     **/
   val secret: List[Bit] = List(0, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1)
 
@@ -229,7 +225,7 @@ object Huffman {
       }
     }
 
-    text.foldLeft(List[Bit]())((a, b) => findBits(tree, b, List[Bit]()) ++ a)
+    text.foldLeft(List[Bit]())((a, b) => a ++ findBits(tree, b, List[Bit]()))
   }
 
   // Part 4b: Encoding using code table
@@ -276,6 +272,6 @@ object Huffman {
     */
   def quickEncode(tree: CodeTree)(text: List[Char]): List[Bit] = {
     val table = convert(tree)
-    text.foldLeft(List[Bit]())((a, b) => a.++(codeBits(table)(b)))
+    text.foldLeft(List[Bit]())((a, b) => a ++ codeBits(table)(b))
   }
 }
